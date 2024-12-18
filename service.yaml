@@ -1,15 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-service
+  name: nginx-service
+  labels:
+    app: nginx
 spec:
-  containers:
-  - name: myapp-container
-    image: nginx
-   type: NodePort
-   selector:
-    app: MyApp
-    ports:
-     - port: 80
-       targetPort: 80
-       nodePort: 30008
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80          # Service port
+    targetPort: 80    # Container port
+    nodePort: 30008   # NodePort
+  type: NodePort
+
